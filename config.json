@@ -1,0 +1,118 @@
+{
+  "_comment": "Enhanced Invoice Metadata Extractor Configuration",
+  "_instructions": "Modify values below to customize the extraction behavior",
+  
+  "vllm": {
+    "_description": "vLLM API configuration settings",
+    "base_url": "http://10.152.220.10:9901/v1",
+    "timeout": 30,
+    "max_retries": 3,
+    "temperature": 0.1,
+    "max_tokens": 1000,
+    "model": "default"
+  },
+  
+  "processing": {
+    "_description": "Document processing configuration",
+    "content_truncate_length": 2000,
+    "max_content_for_llm": 4000,
+    "batch_size": 10,
+    "enable_parallel_processing": false
+  },
+  
+  "extraction_fields": {
+    "_description": "Fields to extract from invoices",
+    "required_fields": [
+      "invoice_number",
+      "invoice_date", 
+      "total_amount",
+      "client_name"
+    ],
+    "optional_fields": [
+      "due_date",
+      "tax_amount",
+      "customer_number",
+      "reference",
+      "company_name",
+      "payment_status",
+      "currency",
+      "line_items"
+    ],
+    "custom_fields": [
+      "delivery_date",
+      "purchase_order_number",
+      "payment_terms",
+      "billing_address",
+      "shipping_address"
+    ]
+  },
+  
+  "locale": {
+    "_description": "Language and locale settings",
+    "default_currency": "CHF",
+    "date_formats": {
+      "german": ["%d.%m.%Y", "%d-%m-%Y"],
+      "english": ["%m/%d/%Y", "%Y-%m-%d"],
+      "iso": ["%Y-%m-%d"]
+    },
+    "currency_symbols": {
+      "CHF": ["CHF", "Fr.", "Fr"],
+      "EUR": ["EUR", "€", "Euro"],
+      "USD": ["USD", "$", "Dollar"]
+    }
+  },
+  
+  "output": {
+    "_description": "Output file configuration",
+    "default_output_file": "invoices_for_chromadb.json",
+    "backup_enabled": true,
+    "export_formats": ["json", "csv"],
+    "include_raw_content": true,
+    "include_extraction_metadata": true
+  },
+  
+  "logging": {
+    "_description": "Logging configuration",
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file_logging": true,
+    "log_file": "invoice_extraction.log"
+  },
+  
+  "quality": {
+    "_description": "Quality control settings",
+    "min_confidence_score": 0.5,
+    "enable_validation": true,
+    "flag_suspicious_amounts": true,
+    "max_amount_threshold": 100000,
+    "enable_duplicate_detection": true
+  },
+  
+  "directories": {
+    "_description": "Directory paths for processing",
+    "invoices_dir": "/opt/rag-preprocessor/storage/documents/stepx",
+    "output_dir": "./output",
+    "logs_dir": "./logs",
+    "backup_dir": "./backups"
+  },
+  
+  "advanced": {
+    "_description": "Advanced settings for power users",
+    "enable_debug_mode": false,
+    "save_failed_extractions": true,
+    "extraction_timeout_per_doc": 60,
+    "fallback_to_regex_always": false,
+    "custom_regex_patterns": {
+      "invoice_number": [
+        "Rechnungsnummer[:\\s]*(\\d+)",
+        "Invoice Number[:\\s]*(\\w+-?\\d+)",
+        "Invoice #([\\w\\d-]+)"
+      ],
+      "date": [
+        "Rechnungsdatum\\s*(\\d{2}\\.\\d{2}\\.\\d{4})",
+        "Invoice Date[:\\s]*(\\d{2}/\\d{2}/\\d{4})",
+        "Date[:\\s]*(\\d{4}-\\d{2}-\\d{2})"
+      ]
+    }
+  }
+}
